@@ -1,0 +1,30 @@
+jQuery(document).ready(function ($) {
+    $('.thumbs-up-button').click(function (e) {
+        e.preventDefault();
+        var button = $(this);
+
+        if (button.hasClass('liked')) {
+            return;
+        }
+
+        var postId = button.data('post-id');
+
+        $.ajax({
+            url: thumbsUpAjax.ajaxurl,
+            type: 'POST',
+            data: {
+                action: 'thumbs_up',
+                post_id: postId,
+                nonce: thumbsUpAjax.nonce
+            },
+            success: function (response) {
+                if (response.success) {
+                    button.siblings('.likes-count').text(response.data.likes);
+                    button.addClass('liked').prop('disabled', true);
+                } else {
+                    console.log('Error:', response.data.message);
+                }
+            }
+        });
+    });
+});

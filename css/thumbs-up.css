@@ -1,0 +1,30 @@
+/* Save this as css/thumbs-up.css in your plugin directory */
+.thumbs-up-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 20px 0;
+}
+
+.thumbs-up-button {
+    background: none;
+    border: 1px solid #ddd;
+    border-radius: 50%;
+    padding: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.thumbs-up-button:hover {
+    background-color: #f0f0f0;
+}
+
+.thumbs-up-button.liked {
+    background-color: #e6f3ff;
+    border-color: #2196F3;
+}
+
+.likes-count {
+    font-size: 14px;
+    color: #666;
+}
