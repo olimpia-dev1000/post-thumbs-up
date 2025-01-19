@@ -23,6 +23,7 @@ class Simple_Post_Thumbs_Up
         add_action('wp_ajax_thumbs_up', array($this, 'handle_thumbs_up'));
         add_action('wp_ajax_nopriv_thumbs_up', array($this, 'handle_thumbs_up'));
         add_shortcode('thumbs_up_button', array($this, 'shortcode_thumbs_up'));
+        add_action('wp_enqueue_scripts', array($this, 'load_dashicons'));
     }
 
     public function init()
@@ -30,6 +31,11 @@ class Simple_Post_Thumbs_Up
         if (!get_option('simple_post_thumbs_up_initialized')) {
             add_option('simple_post_thumbs_up_initialized', true);
         }
+    }
+
+    function load_dashicons()
+    {
+        wp_enqueue_style('dashicons');
     }
 
     public function register_scripts()
