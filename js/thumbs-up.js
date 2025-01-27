@@ -25,7 +25,7 @@ jQuery(document).ready(function ($) {
                     success: function (response) {
                         if (response.success) {
                             button.siblings('.likes-count').text(response.data.likes);
-                            button.removeClass('liked').prop('disabled', false);
+                            button.removeClass('liked');
                         } else {
                             console.log('Error:', response.data.message);
                         }
@@ -50,7 +50,7 @@ jQuery(document).ready(function ($) {
             success: function (response) {
                 if (response.success) {
                     button.siblings('.likes-count').text(response.data.likes);
-                    button.addClass('liked').prop('disabled', true);
+                    button.addClass('liked');
                 } else {
                     console.log('Error:', response.data.message);
                 }
