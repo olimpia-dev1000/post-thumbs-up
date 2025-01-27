@@ -3,7 +3,7 @@
 Plugin Name: Simple Post Thumbs Up
 Plugin URI: https://github.com/olimpia-dev1000/post-thumbs-up
 Description: Adds thumbs up functionality to posts with IP tracking
-Version: 1.2
+Version: 1.3
 Author URI: https://olimpiadev.nl
 GitHub Plugin URI: https://github.com/olimpia-dev1000/post-thumbs-up
 GitHub Branch: main
@@ -22,8 +22,9 @@ class Simple_Post_Thumbs_Up
         add_action('wp_enqueue_scripts', array($this, 'register_scripts'));
         add_action('wp_ajax_thumbs_up', array($this, 'handle_thumbs_up'));
         add_action('wp_ajax_nopriv_thumbs_up', array($this, 'handle_thumbs_up'));
+        add_action('wp_ajax_thumbs_down', array($this, 'handle_thumbs_down'));
+        add_action('wp_ajax_nopriv_thumbs_down', array($this, 'handle_thumbs_down'));
         add_shortcode('thumbs_up_button', array($this, 'shortcode_thumbs_up'));
-        add_action('wp_enqueue_scripts', array($this, 'load_dashicons'));
     }
 
     public function init()
@@ -33,26 +34,24 @@ class Simple_Post_Thumbs_Up
         }
     }
 
-    function load_dashicons()
-    {
-        wp_enqueue_style('dashicons');
-    }
-
     public function register_scripts()
     {
         wp_register_style(
             'simple-thumbs-up-style',
             plugins_url('css/thumbs-up.css', __FILE__),
             array(),
-            '1.2'
+            '1.3'
         );
+
         wp_enqueue_style('simple-thumbs-up-style');
+
+        wp_enqueue_style('dashicons');
 
         wp_register_script(
             'simple-thumbs-up-script',
             plugins_url('js/thumbs-up.js', __FILE__),
             array('jquery'),
-            '1.2',
+            '1.3',
             true
         );
         wp_enqueue_script('simple-thumbs-up-script');
@@ -140,6 +139,41 @@ class Simple_Post_Thumbs_Up
         ));
     }
 
+    public function handle_thumbs_down()
+    {
+        check_ajax_referer('thumbs-up-nonce', 'nonce');
+
+        $post_id = intval($_POST['post_id']);
+        if (!$post_id) {
+            wp_send_json_error(array('message' => 'Invalid post ID.'));
+            return;
+        }
+
+        // Check if the user has liked the post
+        if (!$this->has_user_liked($post_id)) {
+            wp_send_json_error(array('message' => 'You have not liked this post yet.'));
+            return;
+        }
+
+        // Remove the IP from the liked list
+        $user_ip = $this->get_user_ip();
+        $liked_ips = get_post_meta($post_id, 'liked_ips', true);
+        if (is_array($liked_ips)) {
+            $liked_ips = array_diff($liked_ips, array($user_ip));
+            update_post_meta($post_id, 'liked_ips', $liked_ips);
+        }
+
+        // Update like count
+        $likes = get_post_meta($post_id, 'post_likes', true) ?: 0;
+        $likes = max(0, $likes - 1); // Ensure likes don't go negative
+        update_post_meta($post_id, 'post_likes', $likes);
+
+        wp_send_json_success(array(
+            'message' => 'Unlike successful',
+            'likes' => $likes
+        ));
+    }
+
     public function display_thumbs_up_button($post_id = null)
     {
         if (!$post_id) {
@@ -154,7 +188,7 @@ class Simple_Post_Thumbs_Up
         $html .= '<button class="thumbs-up-button ' . ($has_liked ? 'liked' : '') . '" ' .
             'data-post-id="' . esc_attr($post_id) . '" ' .
             ($has_liked ? 'disabled' : '') . '>';
-        $html .= '<span class="dashicons dashicons-thumbs-up"></span><span class="likes-text">Likes</span>';
+        $html .= '<span class="dashicons dashicons-thumbs-up"></span><span class="likes-text"> Likes </span>';
         $html .= '</button>';
         $html .= '</div>';
 
