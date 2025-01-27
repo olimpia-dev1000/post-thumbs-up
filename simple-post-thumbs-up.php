@@ -48,6 +48,7 @@ class Simple_Post_Thumbs_Up
         wp_enqueue_style('dashicons');
 
         wp_register_script(
+
             'simple-thumbs-up-script',
             plugins_url('js/thumbs-up.js', __FILE__),
             array('jquery'),
@@ -186,8 +187,7 @@ class Simple_Post_Thumbs_Up
         $html .= '<span class="likes-count">' . esc_html($likes) . '</span>';
 
         $html .= '<button class="thumbs-up-button ' . ($has_liked ? 'liked' : '') . '" ' .
-            'data-post-id="' . esc_attr($post_id) . '" ' .
-            ($has_liked ? 'disabled' : '') . '>';
+            'data-post-id="' . esc_attr($post_id) . '" >';
         $html .= '<span class="dashicons dashicons-thumbs-up"></span><span class="likes-text"> Likes </span>';
         $html .= '</button>';
         $html .= '</div>';
