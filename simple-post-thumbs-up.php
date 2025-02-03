@@ -9,6 +9,8 @@ GitHub Plugin URI: https://github.com/olimpia-dev1000/post-thumbs-up
 GitHub Branch: main
 */
 
+require_once plugin_dir_path(__FILE__) . 'ip-encryption.php';
+
 // Prevent direct access
 if (!defined('ABSPATH')) {
     exit;
@@ -86,6 +88,7 @@ class Simple_Post_Thumbs_Up
         return $_SERVER['REMOTE_ADDR'];
     }
 
+
     private function has_user_liked($post_id)
     {
         $user_ip = $this->get_user_ip();
@@ -95,7 +98,15 @@ class Simple_Post_Thumbs_Up
             $liked_ips = array();
         }
 
-        return in_array($user_ip, $liked_ips);
+        // Decrypt and check IPs
+        foreach ($liked_ips as $encrypted_ip) {
+            $decrypted_ip = IP_Encryption::decrypt_ip($encrypted_ip);
+            if ($decrypted_ip === $user_ip) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private function add_ip_to_likes($post_id)
@@ -107,7 +118,9 @@ class Simple_Post_Thumbs_Up
             $liked_ips = array();
         }
 
-        $liked_ips[] = $user_ip;
+        // Encrypt IP before storing
+        $encrypted_ip = IP_Encryption::encrypt_ip($user_ip);
+        $liked_ips[] = $encrypted_ip;
         update_post_meta($post_id, 'liked_ips', array_unique($liked_ips));
     }
 
@@ -160,7 +173,8 @@ class Simple_Post_Thumbs_Up
         $user_ip = $this->get_user_ip();
         $liked_ips = get_post_meta($post_id, 'liked_ips', true);
         if (is_array($liked_ips)) {
-            $liked_ips = array_diff($liked_ips, array($user_ip));
+            $encrypted_current_ip = IP_Encryption::encrypt_ip($user_ip);
+            $liked_ips = array_diff($liked_ips, array($encrypted_current_ip));
             update_post_meta($post_id, 'liked_ips', $liked_ips);
         }
 
@@ -180,6 +194,12 @@ class Simple_Post_Thumbs_Up
         if (!$post_id) {
             $post_id = get_the_ID();
         }
+
+        // Add cache-control headers
+        header('Cache-Control: no-cache, must-revalidate, max-age=0');
+        header('Pragma: no-cache');
+        header('Expires: Wed, 11 Jan 1984 05:00:00 GMT');
+
         $likes = get_post_meta($post_id, 'post_likes', true) ?: 0;
         $has_liked = $this->has_user_liked($post_id);
 
