@@ -15,12 +15,14 @@ jQuery(document).ready(function ($) {
                 // Send AJAX request to unlike the post
 
                 $.ajax({
+                    cache: false,
                     url: thumbsUpAjax.ajaxurl,
                     type: 'POST',
                     data: {
                         action: 'thumbs_down', // A separate action for unliking
                         post_id: postId,
-                        nonce: thumbsUpAjax.nonce
+                        nonce: thumbsUpAjax.nonce,
+                        timestamp: new Date().getTime()
                     },
                     success: function (response) {
                         if (response.success) {
@@ -40,12 +42,14 @@ jQuery(document).ready(function ($) {
         var postId = button.data('post-id');
 
         $.ajax({
+            cache: false,
             url: thumbsUpAjax.ajaxurl,
             type: 'POST',
             data: {
                 action: 'thumbs_up',
                 post_id: postId,
-                nonce: thumbsUpAjax.nonce
+                nonce: thumbsUpAjax.nonce,
+                timestamp: new Date().getTime()
             },
             success: function (response) {
                 if (response.success) {
