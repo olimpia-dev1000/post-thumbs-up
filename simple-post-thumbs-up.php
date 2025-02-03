@@ -3,7 +3,7 @@
 Plugin Name: Simple Post Thumbs Up
 Plugin URI: https://github.com/olimpia-dev1000/post-thumbs-up
 Description: Adds thumbs up functionality to posts with IP tracking
-Version: 1.3
+Version: 1.4
 Author URI: https://olimpiadev.nl
 GitHub Plugin URI: https://github.com/olimpia-dev1000/post-thumbs-up
 GitHub Branch: main
@@ -42,7 +42,7 @@ class Simple_Post_Thumbs_Up
             'simple-thumbs-up-style',
             plugins_url('css/thumbs-up.css', __FILE__),
             array(),
-            '1.3'
+            '1.4'
         );
 
         wp_enqueue_style('simple-thumbs-up-style');
@@ -54,7 +54,7 @@ class Simple_Post_Thumbs_Up
             'simple-thumbs-up-script',
             plugins_url('js/thumbs-up.js', __FILE__),
             array('jquery'),
-            '1.3',
+            '1.4',
             true
         );
         wp_enqueue_script('simple-thumbs-up-script');
