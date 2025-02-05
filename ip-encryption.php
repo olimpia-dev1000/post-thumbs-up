@@ -35,6 +35,7 @@ class IP_Encryption
      * @param string $encrypted_ip Encrypted IP to decrypt
      * @return string|false Decrypted IP or false on failure
      */
+
     public static function decrypt_ip($encrypted_ip)
     {
         // Use the same key used for encryption
